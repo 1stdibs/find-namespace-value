@@ -1,5 +1,7 @@
 # Find Namespace Value
 
+[![Build Status](https://travis-ci.org/1stdibs/find-namespace-value.svg?branch=master)](https://travis-ci.org/1stdibs/find-namespace-value)
+
 Find a value inside an object namespace
 
 example:
