@@ -28,6 +28,10 @@ describe("findNamespaceValue", function () {
         var ns = findNamespaceValue('test.name', tester);
         assert(ns, { space: { } });
     });
+    it('should return `undefined`', function () {
+        var ns = findNamespaceValue('test.lastName', tester);
+        assert.equal(ns, undefined);
+    });
     it('should return the fallback value', function () {
         var obj = {};
         var ns = findNamespaceValue('noName', obj, 'this is the fallback');
