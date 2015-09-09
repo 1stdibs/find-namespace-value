@@ -45,4 +45,8 @@ describe("findNamespaceValue", function () {
         var ns = findNamespaceValue('name', true, fallback);
         assert.equal(ns, fallback);
     });
+    it('should return `undefined`', function () {
+        var ns = findNamespaceValue('test.lastName', tester);
+        assert.equal(ns, undefined);
+    });
 });
