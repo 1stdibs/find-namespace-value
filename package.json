@@ -1,6 +1,6 @@
 {
   "name": "find-namespace-value",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Find and return a value in an object namespace",
   "main": "lib/index.js",
   "scripts": {
