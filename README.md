@@ -23,3 +23,5 @@ testing:
 
     $ npm install
     $ npm test
+
+jsPerf: http://jsperf.com/find-namespace-value
