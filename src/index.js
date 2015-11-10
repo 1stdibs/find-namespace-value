@@ -1,20 +1,24 @@
 'use strict';
 
+const lodashClone = require('lodash.clone');
+
 /**
  * Finds the value of any given namespace
- * @param {String} targetNamespace Period delimited string representing the object/property to search for (ie. "my.name.space")
- * @param {Object} [parent] defaults to the window object as the object to iterate over
- * @param {*} [fallback] Any value to return if no property is found
- * @returns {*} Whatever the property value is or whatever is defined in the [fallback] param
+ * @param {object} options
+ * @param {string} options.ns Period delimited string representing the property to search for (ie. "my.name.space")
+ * @param {object} [options.parent={}] object to iterate over
+ * @param {boolean} [options.clone=false] Clone the returned value if it is an object or an array
+ * @param {*} [options.fallback=undefined] the return value if the `options.ns` is not found
+ * @returns {*} Whatever the property value is or whatever is defined in the `options.fallback` param
  */
-module.exports = function findNamespaceValue(targetNamespace, parent, fallback) {
-    var ns = targetNamespace.split('.');
-    var target = parent;
-    var currentNs;
+module.exports = function findNamespaceValue({ ns = '', parent = {}, clone = false, fallback = undefined }) {
+    const namespace = ns.split('.');
+    let target = parent;
+    let currentNs;
     if (!target) {
         return fallback;
     }
-    while (currentNs = ns.shift()) {
+    while (currentNs = namespace.shift()) {
         if (Array.isArray(target) || typeof target === 'string') {
             // if target is an array or a string, ensure that
             // currentNs indexes within the bounds of target
@@ -28,5 +32,5 @@ module.exports = function findNamespaceValue(targetNamespace, parent, fallback) 
         target = target[currentNs];
     }
 
-    return target;
+    return (typeof target === 'object' || Array.isArray(target)) && clone ? lodashClone(target) : target;
 };
