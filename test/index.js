@@ -7,12 +7,12 @@
 
 'use strict';
 
-var assert = require('assert')
-var findNamespaceValue = require('..');
+const assert = require('assert');
+const findNamespaceValue = require('../src');
 
-describe("findNamespaceValue", function () {
-    var tester;
-    beforeEach(function () {
+describe("findNamespaceValue", () => {
+    let tester;
+    beforeEach(() => {
         tester = {
             test: {
                 name: {
@@ -21,60 +21,93 @@ describe("findNamespaceValue", function () {
             }
         };
     });
-    afterEach(function () {
+    afterEach(() => {
         tester = null;
     });
-    it('should find "test.name" and be equal to an empty object', function () {
-        var ns = findNamespaceValue('test.name', tester);
+    it('should be backwards compatible', () => {
+        let ns = findNamespaceValue('test.name', tester);
+        assert.deepEqual(ns, tester.test.name);
+        ns = findNamespaceValue('test.name', { test: { name: 'hanky' }});
+        assert.deepEqual(ns, 'hanky');
+        ns = findNamespaceValue('tester.name', { test: { name: 'hanky' }}, 'nope');
+        assert.deepEqual(ns, 'nope');
+    });
+    it('should find "test.name" and be equal to an empty object', () => {
+        const ns = findNamespaceValue({
+            ns: 'test.name',
+            parent: tester
+        });
         assert(ns, { space: { } });
     });
-    it('should return `undefined`', function () {
-        var ns = findNamespaceValue('test.lastName', tester);
+    it('should return `undefined`', () => {
+        const ns = findNamespaceValue({ ns: 'test.lastName', parent: tester });
         assert.strictEqual(ns, undefined);
     });
-    it('should return the fallback value', function () {
-        var obj = {};
-        var ns = findNamespaceValue('noName', obj, 'this is the fallback');
+    it('should return the fallback value', () => {
+        const obj = {};
+        const ns = findNamespaceValue({ ns: 'noName', parent: obj, fallback: 'this is the fallback' });
         assert.strictEqual(ns, 'this is the fallback');
     });
-    it('should return the value from an object', function () {
-        var obj = {
+    it('should return the value from an object', () => {
+        const obj = {
             name: 'yoda'
         };
-        var ns = findNamespaceValue('name', obj, 'this should not be the value');
+        const ns = findNamespaceValue({ ns: 'name', parent: obj, fallback: 'this should not be the value' });
         assert.strictEqual(ns, 'yoda');
     });
-    it('should return the fallback value for non-object parent', function () {
-        var fallback = 'this should not be the value';
-        var ns = findNamespaceValue('name', true, fallback);
+    it('should return the fallback value for non-object parent', () => {
+        const fallback = 'this should not be the value';
+        const ns = findNamespaceValue({ ns: 'name', parent: true, fallback });
         assert.strictEqual(ns, fallback);
     });
-    it('should return `undefined`', function () {
-        var ns = findNamespaceValue('test.lastName', tester);
+    it('should return `undefined`', () => {
+        const ns = findNamespaceValue({ ns: 'test.lastName', parent: tester });
         assert.strictEqual(ns, undefined);
     });
-    it('should return the value from an array', function () {
-        var obj = {
+    it('should return the value from an array', () => {
+        const obj = {
             test: {
                 names: ['seymour', 'moe', 'ralph']
             }
         };
-        var ns = findNamespaceValue('test.names.0', obj);
+        let ns = findNamespaceValue({ ns: 'test.names.0', parent: obj });
         assert.strictEqual(ns, 'seymour');
-        ns = findNamespaceValue('test.names.2', obj);
+        ns = findNamespaceValue({ ns: 'test.names.2', parent: obj });
         assert.strictEqual(ns, 'ralph');
-        ns = findNamespaceValue('test.names.3', obj);
+        ns = findNamespaceValue({ ns: 'test.names.3', parent: obj });
         assert.strictEqual(ns, undefined)
     });
 
-    it('should return the fallback value when accessing array or string prototype properties', function () {
-        var ns = findNamespaceValue('values.length', { values: [1, 2, 3, 4, 5] }, 'myFallback');
+    it('should return the fallback value when accessing array or string prototype properties', () => {
+        let ns = findNamespaceValue({ ns: 'values.length', parent: { values: [1, 2, 3, 4, 5] }, fallback: 'myFallback' });
         assert.strictEqual(ns, 'myFallback');
-        ns = findNamespaceValue('values.some', { values: [1, 2, 3, 4, 5] }, 'someFallback');
+        ns = findNamespaceValue({ ns: 'values.some', parent: { values: [1, 2, 3, 4, 5] }, fallback: 'someFallback' });
         assert.strictEqual(ns, 'someFallback');
 
-        ns = findNamespaceValue('values.length', { values: 'string' }, 'stringFallback');
+        ns = findNamespaceValue({ ns: 'values.length', parent: { values: 'string' }, fallback: 'stringFallback' });
         assert.strictEqual(ns, 'stringFallback');
+    });
+
+    it('should return a cloned array and object', () => {
+        const obj = {
+            test: {
+                names: ['seymour', 'moe', 'ralph']
+            }
+        };
+        let ns = findNamespaceValue({
+            ns: 'test.names',
+            parent: obj,
+            clone: true
+        });
+        assert.notStrictEqual(ns, obj.test.names);
+
+        ns = findNamespaceValue({
+            ns: 'test',
+            parent: obj,
+            clone: true
+        });
+        assert.notStrictEqual(ns, obj.test);
+
     });
 
 });
