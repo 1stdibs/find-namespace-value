@@ -53,9 +53,9 @@ A single `object` is passed in as `options`:
 @param {object} options
 @param {String} options.ns Period delimited string representing the property to search for (ie. "my.name.space")
 @param {Object} [options.parent={}] defaults to the window object as the object to iterate over
-@param {*} [options.fallback=undefined] Clone the returned value if it is an object or an array
+@param {*} [options.fallback=undefined] A fallback value if `options.ns` is not found
 @param {boolean} [options.clone=false] Clone the returned value if it is an object or an array
-@returns {*} Whatever the property value is or whatever is defined in the [fallback] param
+@returns {*} Whatever the property value is or whatever is defined in the `options.fallback` param, otherwise `undefined`
 ```
 
 [babel]: http://http://babeljs.io/
