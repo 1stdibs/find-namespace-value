@@ -24,13 +24,35 @@ describe("findNamespaceValue", () => {
     afterEach(() => {
         tester = null;
     });
-    it('should be backwards compatible', () => {
+    it('should be backwards compatible to 1.0.x', () => {
         let ns = findNamespaceValue('test.name', tester);
-        assert.deepEqual(ns, tester.test.name);
+        assert.strictEqual(ns, tester.test.name);
         ns = findNamespaceValue('test.name', { test: { name: 'hanky' }});
-        assert.deepEqual(ns, 'hanky');
+        assert.strictEqual(ns, 'hanky');
         ns = findNamespaceValue('tester.name', { test: { name: 'hanky' }}, 'nope');
-        assert.deepEqual(ns, 'nope');
+        assert.strictEqual(ns, 'nope');
+        ns = findNamespaceValue('something.that.is.not.defined', { something: null });
+        assert.strictEqual(ns, null);
+    });
+    it('should return falsey values properly: `null`, `undefined`', () => {
+        let ns = findNamespaceValue({
+            ns: 'test.name.first',
+            parent: {
+                test: {
+                    name: undefined
+                }
+            }
+        });
+        assert.strictEqual(ns, undefined);
+        ns = findNamespaceValue({
+            ns: 'test.name.first',
+            parent: {
+                test: {
+                    name: null
+                }
+            }
+        });
+        assert.strictEqual(ns, null);
     });
     it('should find "test.name" and be equal to an empty object', () => {
         const ns = findNamespaceValue({

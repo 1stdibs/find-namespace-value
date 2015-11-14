@@ -19,6 +19,13 @@ function fns({ ns = '', parent = {}, fallback = undefined, clone = false }) {
         return fallback;
     }
     while (currentNs = namespace.shift()) {
+        if (target === null || target === void(0)) {
+            // void(0) always returned `undefined`
+            // used this since `undefined` can be overwritten
+            // `null` and `undefined` do not have `.hasOwnProperty`
+            // so short circuit this loop here instead
+            return target;
+        }
         if (Array.isArray(target) || typeof target === 'string') {
             // if target is an array or a string, ensure that
             // currentNs indexes within the bounds of target
