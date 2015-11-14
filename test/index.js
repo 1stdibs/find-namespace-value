@@ -61,10 +61,6 @@ describe("findNamespaceValue", () => {
         });
         assert(ns, { space: { } });
     });
-    it('should return `undefined`', () => {
-        const ns = findNamespaceValue({ ns: 'test.lastName', parent: tester });
-        assert.strictEqual(ns, undefined);
-    });
     it('should return the fallback value', () => {
         const obj = {};
         const ns = findNamespaceValue({ ns: 'noName', parent: obj, fallback: 'this is the fallback' });
